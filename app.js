@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require("express");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
+const md5 = require("md5");
 const encrypt = require("mongoose-encryption");
 
 const app = new express();
@@ -39,7 +40,7 @@ app.get("/register", (req, res) => {
 app.post("/register", async (req, res) => {
     const newUser = new User({
         username: req.body.username,
-        password: req.body.password,
+        password: md5(req.body.password),
     });
     try {
         await newUser.save();
@@ -51,7 +52,7 @@ app.post("/register", async (req, res) => {
 
 app.post("/login", async (req, res) => {
     const username = req.body.username;
-    const password = req.body.password;
+    const password = md5(req.body.password);
     try {
         const foundUser = await User.findOne({ username: username });
         const checkPass = await (foundUser.password === password);
